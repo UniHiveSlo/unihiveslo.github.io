@@ -8,7 +8,8 @@
     <link rel="canonical" href="https://unihive.si/" />
     <link rel="icon" href="hero.png" type="image/png" />
     <link rel="apple-touch-icon" href="hero.png" />
-    <link rel="preload" as="image" href="hero.png" />
+    <link rel="preload" as="image" href="hero.png" media="(min-aspect-ratio: 2/3)" />
+    <link rel="preload" as="image" href="hero-mobile.png" media="(max-aspect-ratio: 2/3)" />
     <meta name="theme-color" content="#2b2b2b" />
     <meta name="color-scheme" content="dark" />
     <meta property="og:site_name" content="UniHive" />
@@ -61,6 +62,12 @@
         background: var(--bg);
       }
 
+      picture {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
       .hero {
         display: block;
         width: 100%;
@@ -96,15 +103,18 @@
   <body>
     <main>
       <h1 class="visually-hidden">UniHive — prihaja kmalu</h1>
-      <img
-        class="hero"
-        src="hero.png"
-        width="1920"
-        height="1080"
-        alt="UniHive — Prihaja kmalu!"
-        decoding="async"
-        fetchpriority="high"
-      />
+      <picture>
+        <source media="(max-aspect-ratio: 2/3)" srcset="hero-mobile.png" />
+        <img
+          class="hero"
+          src="hero.png"
+          width="1920"
+          height="1080"
+          alt="UniHive — Prihaja kmalu!"
+          decoding="async"
+          fetchpriority="high"
+        />
+      </picture>
     </main>
   </body>
 </html>
