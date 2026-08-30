@@ -9,15 +9,15 @@
   --violet-soft: #8b4df0;
   --logo-size: clamp(120px, min(20vw, 20vh), 260px);
   /* Keep tip clearance tied to logo, but never shorter than the viewport span. */
-  --banner-gap: calc(var(--logo-size) * 1.1);
+  --banner-gap: calc(var(--logo-size) * 1.35);
   --banners-width: max(
     calc(var(--banner-gap) * 4166.93 / 289),
-    145vw,
-    145vh
+    150vw,
+    150vh
   );
   --banner-angle: -8.1deg;
-  --corner-size: clamp(110px, 28vmin, 300px);
-  --lettering-opacity: 0.34;
+  --corner-size: clamp(88px, 20vmin, 220px);
+  --lettering-opacity: 0.28;
 }
 
 *,
@@ -131,17 +131,17 @@ body {
   -webkit-user-drag: none;
 }
 
-/* Half-disc visible: circle center sits on the trim edge, nudged slightly inward. */
+/* Half-disc visible: circle center near the trim edge, nudged inward. */
 .corner-tl {
   top: 0;
   left: 0;
-  transform: translate(-42%, -42%);
+  transform: translate(-38%, -38%);
 }
 
 .corner-br {
   right: 0;
   bottom: 0;
-  transform: translate(42%, 42%);
+  transform: translate(38%, 38%);
 }
 
 .spin-root {
@@ -300,7 +300,7 @@ body {
 @media (max-width: 720px) {
   :root {
     --logo-size: clamp(112px, 34vw, 200px);
-    --corner-size: clamp(96px, 30vw, 200px);
+    --corner-size: clamp(72px, 22vw, 140px);
   }
 
   .banner-text {
