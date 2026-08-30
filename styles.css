@@ -7,9 +7,9 @@
   --violet: #6814e9;
   --violet-deep: #4f0fb8;
   --violet-soft: #8b4df0;
-  --logo-size: clamp(132px, 18vmin, 280px);
+  --logo-size: clamp(140px, 20vmin, 300px);
   /* Banner artboard gap (~289 / 4166) maps to logo clearance */
-  --banners-width: calc(var(--logo-size) * 15.9);
+  --banners-width: calc(var(--logo-size) * 14.6);
   --banner-angle: -8.1deg;
 }
 
@@ -174,29 +174,32 @@ body {
 
 .banner-text {
   position: absolute;
-  top: 50%;
   margin: 0;
   color: var(--ink);
-  font-size: clamp(0.85rem, 2.35vmin, 1.85rem);
+  font-size: clamp(1rem, 2.8vmin, 2.15rem);
   font-weight: 700;
   font-style: italic;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   line-height: 1;
   text-transform: none;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
+  z-index: 2;
   transform-origin: center center;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .banner-text-left {
-  left: 27%;
-  transform: translate(-50%, -58%) rotate(var(--banner-angle));
+  left: 23.5%;
+  top: 74%;
+  transform: translate(-50%, -50%) rotate(var(--banner-angle));
 }
 
 .banner-text-right {
-  left: 73%;
-  transform: translate(-50%, -58%) rotate(var(--banner-angle));
+  left: 76.5%;
+  top: 26%;
+  transform: translate(-50%, -50%) rotate(var(--banner-angle));
 }
 
 .logo-hit {
@@ -286,19 +289,12 @@ body {
 
 @media (max-width: 720px) {
   :root {
-    --logo-size: clamp(118px, 34vw, 210px);
+    --logo-size: clamp(124px, 36vw, 220px);
   }
 
   .banner-text {
-    font-size: clamp(0.72rem, 3.2vw, 1.15rem);
-  }
-
-  .banner-text-left {
-    left: 26%;
-  }
-
-  .banner-text-right {
-    left: 74%;
+    font-size: clamp(0.78rem, 3.4vw, 1.2rem);
+    letter-spacing: 0.04em;
   }
 }
 
