@@ -193,7 +193,7 @@ body {
 
 .banner-text {
   position: absolute;
-  width: clamp(140px, 22%, 320px);
+  width: clamp(150px, 9.5%, 280px);
   height: auto;
   opacity: 0;
   pointer-events: none;
@@ -204,14 +204,15 @@ body {
 }
 
 .banner-text-left {
-  left: 23.5%;
-  top: 74%;
+  /* Sit on the visible left strip near the logo clearance, not off-canvas. */
+  left: 39.5%;
+  top: 58%;
   transform: translate(-50%, -50%);
 }
 
 .banner-text-right {
-  left: 76.5%;
-  top: 26%;
+  left: 60.5%;
+  top: 42%;
   transform: translate(-50%, -50%);
 }
 
@@ -310,7 +311,7 @@ body {
   }
 
   .banner-text {
-    width: clamp(110px, 28%, 200px);
+    width: clamp(120px, 12%, 200px);
   }
 }
 
