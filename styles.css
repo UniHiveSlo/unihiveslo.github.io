@@ -160,6 +160,21 @@ body {
   height: calc(var(--banners-width) * 647.68 / 4166.93);
   max-width: none;
   transform-origin: center center;
+  /* Enforce the invisible clearance circle around the logo at every viewport size. */
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent calc(var(--logo-size) * 0.72),
+    #000 calc(var(--logo-size) * 0.72 + 2px),
+    #000 100%
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent 0,
+    transparent calc(var(--logo-size) * 0.72),
+    #000 calc(var(--logo-size) * 0.72 + 2px),
+    #000 100%
+  );
 }
 
 .banner {
