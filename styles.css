@@ -41,7 +41,6 @@ body {
 body {
   min-height: 100vh;
   min-height: 100dvh;
-  font-family: Oswald, "Arial Narrow", Impact, sans-serif;
 }
 
 .visually-hidden {
@@ -198,31 +197,26 @@ body {
 
 .banner-text {
   position: absolute;
-  margin: 0;
-  color: var(--ink);
-  font-size: clamp(0.95rem, 2.6vmin, 2rem);
-  font-weight: 700;
-  font-style: italic;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  text-transform: none;
-  white-space: nowrap;
+  width: clamp(140px, 22%, 320px);
+  height: auto;
   opacity: 0;
   pointer-events: none;
   z-index: 2;
-  transform-origin: center center;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Rotation is already built into the text SVG assets. */
 }
 
 .banner-text-left {
   left: 23.5%;
   top: 74%;
-  transform: translate(-50%, -50%) rotate(var(--banner-angle));
+  transform: translate(-50%, -50%);
 }
 
 .banner-text-right {
   left: 76.5%;
   top: 26%;
-  transform: translate(-50%, -50%) rotate(var(--banner-angle));
+  transform: translate(-50%, -50%);
 }
 
 .logo-hit {
@@ -294,8 +288,9 @@ body {
 }
 
 .scene-alt .banner-text {
-  color: #f6f2ff;
-  text-shadow: none;
+  /* Keep dark ink readable on violet banners; slight lift only. */
+  filter: brightness(1.15) contrast(1.05);
+  opacity: 1;
 }
 
 .scene-alt .logo-shadow {
@@ -319,8 +314,7 @@ body {
   }
 
   .banner-text {
-    font-size: clamp(0.72rem, 3.2vw, 1.1rem);
-    letter-spacing: 0.04em;
+    width: clamp(110px, 28%, 200px);
   }
 }
 
