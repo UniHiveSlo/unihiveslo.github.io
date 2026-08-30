@@ -7,10 +7,17 @@
   --violet: #6814e9;
   --violet-deep: #4f0fb8;
   --violet-soft: #8b4df0;
-  --logo-size: clamp(140px, 20vmin, 300px);
-  /* Banner artboard gap (~289 / 4166) maps to logo clearance */
-  --banners-width: calc(var(--logo-size) * 14.6);
+  --logo-size: clamp(120px, min(20vw, 20vh), 260px);
+  /* Keep tip clearance tied to logo, but never shorter than the viewport span. */
+  --banner-gap: calc(var(--logo-size) * 1.1);
+  --banners-width: max(
+    calc(var(--banner-gap) * 4166.93 / 289),
+    145vw,
+    145vh
+  );
   --banner-angle: -8.1deg;
+  --corner-size: clamp(110px, 28vmin, 300px);
+  --lettering-opacity: 0.34;
 }
 
 *,
@@ -68,14 +75,14 @@ body {
 
 .bg-lettering {
   position: absolute;
-  inset: -8%;
+  inset: 0;
   background-color: var(--bg);
   background-image: url("assets/lettering_pattern.svg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  transform: rotate(-18deg) scale(1.2);
-  opacity: 1;
+  /* Keep the SVG’s native orientation — no rotate. */
+  opacity: var(--lettering-opacity);
   pointer-events: none;
 }
 
@@ -86,7 +93,7 @@ body {
   background-size: cover;
   background-position: center;
   mix-blend-mode: screen;
-  opacity: 0.55;
+  opacity: 0.45;
   pointer-events: none;
   transition: opacity 90ms linear;
 }
@@ -95,7 +102,7 @@ body {
   background-image: url("assets/background_2.svg");
   /* Files are currently identical; mirror/offset so the flicker stays visible. */
   transform: scaleX(-1) translate3d(1.5%, -0.8%, 0);
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .bg-texture.is-hidden {
@@ -117,23 +124,24 @@ body {
 
 .corner {
   position: absolute;
-  width: clamp(220px, 52vmin, 620px);
+  width: var(--corner-size);
   height: auto;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
 }
 
+/* Half-disc visible: circle center sits on the trim edge, nudged slightly inward. */
 .corner-tl {
   top: 0;
   left: 0;
-  transform: translate(-48%, -48%);
+  transform: translate(-42%, -42%);
 }
 
 .corner-br {
   right: 0;
   bottom: 0;
-  transform: translate(48%, 48%);
+  transform: translate(42%, 42%);
 }
 
 .spin-root {
@@ -142,7 +150,7 @@ body {
   display: grid;
   place-items: center;
   pointer-events: none;
-  transform-origin: center center;
+  transform-origin: 50% 50%;
   will-change: transform;
 }
 
@@ -150,6 +158,7 @@ body {
   position: relative;
   width: var(--banners-width);
   height: calc(var(--banners-width) * 647.68 / 4166.93);
+  max-width: none;
   transform-origin: center center;
 }
 
@@ -176,7 +185,7 @@ body {
   position: absolute;
   margin: 0;
   color: var(--ink);
-  font-size: clamp(1rem, 2.8vmin, 2.15rem);
+  font-size: clamp(0.95rem, 2.6vmin, 2rem);
   font-weight: 700;
   font-style: italic;
   letter-spacing: 0.06em;
@@ -187,7 +196,6 @@ body {
   pointer-events: none;
   z-index: 2;
   transform-origin: center center;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .banner-text-left {
@@ -246,35 +254,37 @@ body {
 
 /* Violet / inverted palette for the circular wipe clone */
 .scene-alt {
-  --bg: #d4d4d4;
-  --ink: #ececec;
-  background: #d4d4d4;
+  --bg: #cfcfcf;
+  --ink: #f4f0ff;
+  --lettering-opacity: 0.22;
+  background: #cfcfcf;
 }
 
 .scene-alt .bg-lettering {
-  background-color: #d4d4d4;
-  filter: invert(1) contrast(0.92);
-  opacity: 0.9;
+  background-color: #cfcfcf;
+  /* Soft invert — keep lettering barely readable, not high-contrast. */
+  filter: invert(1) contrast(0.78) brightness(1.05);
+  opacity: 0.22;
 }
 
 .scene-alt .bg-texture {
-  filter: invert(1) hue-rotate(200deg) saturate(0.35);
-  opacity: 0.35;
+  filter: invert(1) hue-rotate(200deg) saturate(0.3);
+  opacity: 0.22;
   mix-blend-mode: multiply;
 }
 
 .scene-alt .yellow {
   filter: brightness(0) saturate(100%) invert(18%) sepia(94%) saturate(5000%)
-    hue-rotate(258deg) brightness(0.95) contrast(1.15);
+    hue-rotate(258deg) brightness(0.95) contrast(1.1);
 }
 
 .scene-alt .banner-text {
-  color: #f3eefe;
-  text-shadow: 0 0 1px rgba(40, 10, 90, 0.35);
+  color: #f6f2ff;
+  text-shadow: none;
 }
 
 .scene-alt .logo-shadow {
-  filter: invert(1) opacity(0.55);
+  filter: invert(1) opacity(0.4);
   mix-blend-mode: multiply;
 }
 
@@ -283,17 +293,18 @@ body {
   inset: 0;
   z-index: 8;
   pointer-events: none;
-  clip-path: circle(0% at 50% 50%);
+  clip-path: circle(0px at 50% 50%);
   will-change: clip-path;
 }
 
 @media (max-width: 720px) {
   :root {
-    --logo-size: clamp(124px, 36vw, 220px);
+    --logo-size: clamp(112px, 34vw, 200px);
+    --corner-size: clamp(96px, 30vw, 200px);
   }
 
   .banner-text {
-    font-size: clamp(0.78rem, 3.4vw, 1.2rem);
+    font-size: clamp(0.72rem, 3.2vw, 1.1rem);
     letter-spacing: 0.04em;
   }
 }

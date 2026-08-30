@@ -22,6 +22,7 @@
   let breatheAnim = null;
   let flickerTimer = null;
   let usingA = true;
+  let spinOffsetDeg = 0;
 
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -32,8 +33,14 @@
       anim.oncancel = () => resolve(anim);
     });
 
+  function coverRadiusPx() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    // Diagonal half + margin so the circle fully covers the viewport.
+    return Math.ceil(Math.hypot(w, h) / 2) + 24;
+  }
+
   async function runIntro() {
-    // Logo fade in over 3s; banners jump in from the sides with bounce.
     const logoFade = animate(
       logo,
       [{ opacity: 0 }, { opacity: 1 }],
@@ -45,7 +52,6 @@
       { duration: 3000, easing: "cubic-bezier(0.22, 0.61, 0.36, 1)", fill: "forwards" }
     );
 
-    // Ramped arrival + bounce against the invisible clearance circle.
     const bannerEase = "cubic-bezier(0.16, 0.84, 0.28, 1.35)";
     const leftIn = animate(
       bannerLeft,
@@ -70,9 +76,8 @@
       { duration: 1650, easing: bannerEase, fill: "forwards", delay: 280 }
     );
 
-    // Mirror resting banners into the alt scene once intro finishes.
     await Promise.all([leftIn, rightIn]);
-    altBanners.forEach((b, i) => {
+    altBanners.forEach((b) => {
       b.style.transform = "translate3d(0, 0, 0)";
     });
 
@@ -110,7 +115,7 @@
 
   function breatheOnce() {
     if (!ready || busy) return;
-    const scale = 1 + (Math.random() * 0.012 + 0.006); // 0.6%–1.8%
+    const scale = 1 + (Math.random() * 0.012 + 0.006);
     const up = 1400 + Math.random() * 1600;
     const down = 1600 + Math.random() * 1800;
     const ease = "cubic-bezier(0.37, 0, 0.63, 1)";
@@ -151,7 +156,6 @@
 
   function scheduleFlicker() {
     if (flickerTimer) clearTimeout(flickerTimer);
-    // Infrequent flickers: 9–28s between events.
     const delay = 9000 + Math.random() * 19000;
     flickerTimer = setTimeout(runFlicker, delay);
   }
@@ -160,15 +164,14 @@
     const from = usingA ? bgA : bgB;
     const to = usingA ? bgB : bgA;
     to.classList.remove("is-hidden");
-    // Quick double-flash, then settle on the other texture.
-    to.style.opacity = "0.55";
+    to.style.opacity = usingA ? "0.4" : "0.45";
     from.style.opacity = "0";
     await wait(70);
-    from.style.opacity = "0.55";
+    from.style.opacity = usingA ? "0.45" : "0.4";
     to.style.opacity = "0";
     await wait(60);
     from.style.opacity = "0";
-    to.style.opacity = "0.55";
+    to.style.opacity = usingA ? "0.4" : "0.45";
     from.classList.add("is-hidden");
     usingA = !usingA;
     scheduleFlicker();
@@ -179,30 +182,47 @@
     stopBreathing();
     logoHit.disabled = true;
 
-    // 7 full turns with propeller ease-in and terminal sway.
     const turns = 7;
-    const total = turns * 360;
-    const duration = 5200;
+    const total = spinOffsetDeg + turns * 360;
+    const duration = 6800;
 
+    // Soft acceleration, then a rubbery multi-bounce settle (no hard stop).
     const keyframes = [
-      { transform: "rotate(0deg)", offset: 0, easing: "cubic-bezier(0.2, 0.05, 0.2, 1)" },
-      { transform: `rotate(${total - 18}deg)`, offset: 0.82, easing: "cubic-bezier(0.15, 0.7, 0.2, 1)" },
-      { transform: `rotate(${total + 10}deg)`, offset: 0.9 },
-      { transform: `rotate(${total - 5}deg)`, offset: 0.95 },
+      { transform: `rotate(${spinOffsetDeg}deg)`, offset: 0 },
+      { transform: `rotate(${spinOffsetDeg + turns * 360 * 0.12}deg)`, offset: 0.18 },
+      { transform: `rotate(${total - 28}deg)`, offset: 0.72 },
+      { transform: `rotate(${total + 16}deg)`, offset: 0.8 },
+      { transform: `rotate(${total - 10}deg)`, offset: 0.87 },
+      { transform: `rotate(${total + 5}deg)`, offset: 0.92 },
+      { transform: `rotate(${total - 2}deg)`, offset: 0.96 },
       { transform: `rotate(${total}deg)`, offset: 1 },
     ];
 
-    await Promise.all([
-      animate(spinRoot, keyframes, { duration, fill: "forwards" }),
-      altSpin
-        ? animate(altSpin, keyframes, { duration, fill: "forwards" })
-        : Promise.resolve(),
+    const opts = {
+      duration,
+      easing: "cubic-bezier(0.18, 0.02, 0.12, 1)",
+      fill: "forwards",
+    };
+
+    const [mainAnim] = await Promise.all([
+      animate(spinRoot, keyframes, opts),
+      altSpin ? animate(altSpin, keyframes, opts) : Promise.resolve(),
     ]);
 
-    // Reset rotation matrix without a visible jump.
-    spinRoot.style.transform = "rotate(0deg)";
-    if (altSpin) altSpin.style.transform = "rotate(0deg)";
-    // Clear WAAPI fill so CSS transform is authoritative again.
+    spinOffsetDeg = total;
+    // Keep the settled angle in inline styles so canceling WAAPI doesn't jerk.
+    if (mainAnim && typeof mainAnim.commitStyles === "function") {
+      mainAnim.commitStyles();
+    } else {
+      spinRoot.style.transform = `rotate(${spinOffsetDeg}deg)`;
+    }
+    if (altSpin) {
+      const altAnims = altSpin.getAnimations();
+      const last = altAnims[altAnims.length - 1];
+      if (last && typeof last.commitStyles === "function") last.commitStyles();
+      else altSpin.style.transform = `rotate(${spinOffsetDeg}deg)`;
+    }
+
     spinRoot.getAnimations().forEach((a) => a.cancel());
     if (altSpin) altSpin.getAnimations().forEach((a) => a.cancel());
 
@@ -216,44 +236,49 @@
     stopBreathing();
     logoHit.disabled = true;
 
-    // Sync alt scene logo scale with current resting state.
     if (altLogo) altLogo.style.opacity = "1";
 
-    // Swift pop-out to full page coverage.
+    const full = coverRadiusPx();
+
+    // Pond-ripple expand: slow start, organic growth to full cover.
     await animate(
       colorMask,
       [
-        { clipPath: "circle(0% at 50% 50%)" },
-        { clipPath: "circle(18% at 50% 50%)", offset: 0.35 },
-        { clipPath: "circle(85% at 50% 50%)", offset: 0.78 },
-        { clipPath: "circle(140% at 50% 50%)" },
+        { clipPath: `circle(0px at 50% 50%)` },
+        { clipPath: `circle(${Math.round(full * 0.06)}px at 50% 50%)`, offset: 0.12 },
+        { clipPath: `circle(${Math.round(full * 0.22)}px at 50% 50%)`, offset: 0.32 },
+        { clipPath: `circle(${Math.round(full * 0.55)}px at 50% 50%)`, offset: 0.62 },
+        { clipPath: `circle(${Math.round(full * 0.88)}px at 50% 50%)`, offset: 0.86 },
+        { clipPath: `circle(${full}px at 50% 50%)` },
       ],
       {
-        duration: 780,
-        easing: "cubic-bezier(0.12, 0.75, 0.2, 1.05)",
+        duration: 2600,
+        easing: "cubic-bezier(0.22, 0.08, 0.2, 1)",
         fill: "forwards",
       }
     );
 
-    await wait(4000);
+    await wait(2800);
 
-    // Fast shrink back.
+    // Soft collapse back into the logo center.
     await animate(
       colorMask,
       [
-        { clipPath: "circle(140% at 50% 50%)" },
-        { clipPath: "circle(20% at 50% 50%)", offset: 0.55 },
-        { clipPath: "circle(0% at 50% 50%)" },
+        { clipPath: `circle(${full}px at 50% 50%)` },
+        { clipPath: `circle(${Math.round(full * 0.72)}px at 50% 50%)`, offset: 0.22 },
+        { clipPath: `circle(${Math.round(full * 0.38)}px at 50% 50%)`, offset: 0.55 },
+        { clipPath: `circle(${Math.round(full * 0.12)}px at 50% 50%)`, offset: 0.82 },
+        { clipPath: `circle(0px at 50% 50%)` },
       ],
       {
-        duration: 520,
-        easing: "cubic-bezier(0.55, 0.05, 0.85, 0.35)",
+        duration: 2200,
+        easing: "cubic-bezier(0.4, 0.0, 0.2, 1)",
         fill: "forwards",
       }
     );
 
     colorMask.getAnimations().forEach((a) => a.cancel());
-    colorMask.style.clipPath = "circle(0% at 50% 50%)";
+    colorMask.style.clipPath = "circle(0px at 50% 50%)";
 
     busy = false;
     logoHit.disabled = false;
@@ -274,16 +299,6 @@
   }
 
   logoHit.addEventListener("click", onLogoActivate);
-  logoHit.addEventListener(
-    "pointerup",
-    (e) => {
-      // Prefer click; this helps stubborn mobile taps without double-firing much.
-      if (e.pointerType === "touch" && ready && !busy) {
-        // let click handle it
-      }
-    },
-    { passive: true }
-  );
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     logo.style.opacity = "1";
@@ -305,7 +320,6 @@
     return;
   }
 
-  // Start once fonts/images have a moment to settle.
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(() => requestAnimationFrame(runIntro));
   } else {
