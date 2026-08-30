@@ -78,22 +78,14 @@
 
     await wait(1000);
 
-    await Promise.all([
-      animate(
-        textLeft,
-        [{ opacity: 0 }, { opacity: 1 }],
-        { duration: 700, easing: "ease-out", fill: "forwards" }
-      ),
-      animate(
-        textRight,
-        [{ opacity: 0 }, { opacity: 1 }],
-        { duration: 700, easing: "ease-out", fill: "forwards" }
-      ),
-    ]);
+    textLeft.style.transition = "opacity 700ms ease-out";
+    textRight.style.transition = "opacity 700ms ease-out";
+    textLeft.style.opacity = "1";
+    textRight.style.opacity = "1";
     altTexts.forEach((t) => {
       t.style.opacity = "1";
     });
-
+    await wait(700);
     await logoFade;
     if (altLogo) altLogo.style.opacity = "1";
 
