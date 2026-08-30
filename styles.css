@@ -113,10 +113,6 @@ body {
   transform: translate3d(0, 0, 0);
 }
 
-.scene-alt .banner-text {
-  opacity: 1;
-}
-
 .scene-alt .logo {
   opacity: 1;
 }
