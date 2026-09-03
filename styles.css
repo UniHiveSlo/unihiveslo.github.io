@@ -1,0 +1,258 @@
+:root {
+  color-scheme: dark;
+  --bg: #2b2b2b;
+  --artboard-w: 2586;
+  --artboard-h: 1844;
+  --crop-w: 1920;
+  --crop-h: 1080;
+  --crop-x: 333;
+  --crop-y: 382;
+  --lettering-opacity: 0.3;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+}
+
+/* Fixed design crop; JS sets --frame-scale to cover the viewport. */
+.frame {
+  position: relative;
+  width: calc(var(--crop-w) * 1px);
+  height: calc(var(--crop-h) * 1px);
+  overflow: hidden;
+  background: var(--bg);
+  transform: scale(var(--frame-scale, 1));
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.artboard {
+  position: absolute;
+  width: calc(var(--artboard-w) * 1px);
+  height: calc(var(--artboard-h) * 1px);
+  left: calc(var(--crop-x) * -1px);
+  top: calc(var(--crop-y) * -1px);
+  background: var(--bg);
+}
+
+.bg-lettering {
+  position: absolute;
+  /* lettering asset 2757×1297 — center on artboard, native orientation */
+  left: 50%;
+  top: 50%;
+  width: 2757px;
+  height: 1297.57px;
+  transform: translate(-50%, -50%);
+  background-image: url("assets/lettering_pattern.svg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  opacity: var(--lettering-opacity);
+  pointer-events: none;
+}
+
+.bg-texture {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2702px;
+  height: 1916px;
+  transform: translate(-50%, -50%);
+  background-image: url("assets/background.svg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.45;
+  pointer-events: none;
+  transition: opacity 90ms linear;
+}
+
+.bg-texture[data-variant="2"] {
+  background-image: url("assets/background_2.svg");
+  transform: translate(-50%, -50%) scaleX(-1);
+  opacity: 0.4;
+}
+
+.bg-texture.is-hidden {
+  opacity: 0 !important;
+}
+
+.corner {
+  position: absolute;
+  width: 268px;
+  height: 268px;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Exact PDF positions on the 2586×1844 artboard */
+.corner-tl {
+  left: 549px;
+  top: 244px;
+}
+
+.corner-br {
+  left: 1789px;
+  top: 1324px;
+}
+
+.spin-root {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform-origin: 1293px 922px; /* artboard center */
+  will-change: transform;
+}
+
+.banners {
+  position: absolute;
+  left: 0;
+  top: 698.9px;
+  width: 2586px;
+  height: 418.62px;
+}
+
+.banner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform;
+}
+
+.banner-left {
+  transform: translate3d(-120%, 0, 0);
+}
+
+.banner-right {
+  transform: translate3d(120%, 0, 0);
+}
+
+.banner-text {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Rotation is authored into the SVG assets. */
+}
+
+/* PDF text boxes on the artboard */
+.banner-text-left {
+  left: 724.5px;
+  top: 913.7px;
+  width: 354.07px;
+  height: 105.5px;
+  /* Convert artboard → banners-local (banners top = 698.9) */
+  top: calc(913.7px - 698.9px);
+  left: 724.5px;
+}
+
+.banner-text-right {
+  left: 1506.4px;
+  width: 355.81px;
+  height: 105.75px;
+  top: calc(805.4px - 698.9px);
+}
+
+.logo-hit {
+  position: absolute;
+  left: 1178px;
+  top: 830px;
+  width: 230px;
+  height: 182.98px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 5;
+  transform-origin: 55% 70%;
+  will-change: transform;
+}
+
+.logo-hit:disabled {
+  cursor: default;
+}
+
+.logo,
+.logo-shadow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.logo {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.logo-shadow {
+  opacity: 0;
+  mix-blend-mode: soft-light;
+  transform: translate(2%, 3%) scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-left,
+  .banner-right,
+  .logo,
+  .banner-text,
+  .logo-hit {
+    transition: none !important;
+  }
+}
