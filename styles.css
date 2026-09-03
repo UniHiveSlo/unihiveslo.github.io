@@ -187,22 +187,19 @@ body {
   /* Rotation is authored into the SVG assets. */
 }
 
-/* PDF text boxes on the artboard */
+/* PDF text boxes on the artboard (local to .banners which starts at y=698.9) */
 .banner-text-left {
   left: 724.5px;
-  top: 913.7px;
+  top: calc(913.7px - 698.9px);
   width: 354.07px;
   height: 105.5px;
-  /* Convert artboard → banners-local (banners top = 698.9) */
-  top: calc(913.7px - 698.9px);
-  left: 724.5px;
 }
 
 .banner-text-right {
   left: 1506.4px;
+  top: calc(805.4px - 698.9px);
   width: 355.81px;
   height: 105.75px;
-  top: calc(805.4px - 698.9px);
 }
 
 .logo-hit {
