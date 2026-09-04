@@ -35,10 +35,27 @@
     });
 
   function fitFrame() {
-    const sx = window.innerWidth / CROP_W;
-    const sy = window.innerHeight / CROP_H;
-    // Cover the viewport with the 1920×1080 crop.
-    frame.style.setProperty("--frame-scale", String(Math.max(sx, sy)));
+    const vv = window.visualViewport;
+    const vw = Math.max(1, vv && vv.width ? vv.width : window.innerWidth);
+    const vh = Math.max(1, vv && vv.height ? vv.height : window.innerHeight);
+    const sx = vw / CROP_W;
+    const sy = vh / CROP_H;
+    const designAspect = CROP_W / CROP_H;
+    const viewAspect = vw / vh;
+
+    let scale;
+    if (viewAspect < designAspect) {
+      // Portrait / narrow: zoom into a center band so banners + logo stay
+      // readable instead of cover-cropping them off-screen.
+      const effectiveW = 1280;
+      const effectiveH = effectiveW / designAspect;
+      scale = Math.min(vw / effectiveW, vh / effectiveH);
+    } else {
+      // Landscape / desktop: contain the full 1920×1080 crop, centered.
+      scale = Math.min(sx, sy);
+    }
+
+    frame.style.setProperty("--frame-scale", String(scale));
   }
 
   function setPrijaviInteractive(on) {
@@ -261,6 +278,10 @@
 
   logoHit.addEventListener("click", onLogoActivate);
   window.addEventListener("resize", fitFrame);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", fitFrame);
+    window.visualViewport.addEventListener("scroll", fitFrame);
+  }
   fitFrame();
   setPrijaviInteractive(false);
 

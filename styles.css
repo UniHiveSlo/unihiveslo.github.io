@@ -8,6 +8,7 @@
   --crop-x: 333;
   --crop-y: 382;
   --lettering-opacity: 1;
+  --frame-scale: 1;
 }
 
 *,
@@ -29,8 +30,8 @@ body {
 }
 
 body {
-  min-height: 100vh;
-  min-height: 100dvh;
+  position: fixed;
+  inset: 0;
 }
 
 .visually-hidden {
@@ -46,24 +47,28 @@ body {
 }
 
 .stage {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
   background: var(--bg);
-  display: grid;
-  place-items: center;
 }
 
-/* Fixed design crop; JS sets --frame-scale to cover the viewport. */
+/*
+  Fixed 1920×1080 design crop, centered on the stage, then scaled.
+  Margins center the layout box so transform:scale stays visually centered
+  (unlike grid + scale, which can pin oversized boxes to the top-left).
+*/
 .frame {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: calc(var(--crop-w) * 1px);
   height: calc(var(--crop-h) * 1px);
+  margin-left: calc(var(--crop-w) * -0.5px);
+  margin-top: calc(var(--crop-h) * -0.5px);
   overflow: hidden;
   background: var(--bg);
-  transform: scale(var(--frame-scale, 1));
+  transform: scale(var(--frame-scale));
   transform-origin: center center;
   will-change: transform;
 }
@@ -158,7 +163,7 @@ body {
   height: 418.62px;
 }
 
-/* Tracks carry both the yellow strip and its text so gap/offset stay aligned. */
+/* Tracks carry banner, shadow, and text so gap/offset stay aligned. */
 .banner-track {
   position: absolute;
   inset: 0;
@@ -173,7 +178,8 @@ body {
   transform: translate3d(120%, 0, 0);
 }
 
-.banner {
+.banner,
+.banner-shadow {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -181,6 +187,18 @@ body {
   display: block;
   user-select: none;
   -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.banner-shadow {
+  opacity: 0.9;
+  mix-blend-mode: soft-light;
+  transform: translate(1.4%, 3.2%) scale(1.03);
+  z-index: 0;
+}
+
+.banner {
+  z-index: 1;
 }
 
 .banner-text {
@@ -190,6 +208,7 @@ body {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+  z-index: 2;
   /* Rotation is authored into the SVG assets. */
 }
 
@@ -240,13 +259,27 @@ body {
   cursor: default;
 }
 
-.prijavi-banner {
+.prijavi-banner,
+.prijavi-shadow {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   display: block;
   user-select: none;
   -webkit-user-drag: none;
   pointer-events: none;
+}
+
+.prijavi-shadow {
+  opacity: 0.88;
+  mix-blend-mode: soft-light;
+  transform: translate(2%, 4%) scale(1.04);
+  z-index: 0;
+}
+
+.prijavi-banner {
+  z-index: 1;
 }
 
 .logo-hit {
