@@ -13,16 +13,19 @@
   </head>
   <body>
     <div class="stage" id="stage">
+      <!-- Full-bleed atmosphere: always covers the viewport (esp. portrait height). -->
+      <div class="stage-bg" aria-hidden="true">
+        <div class="bg-lettering"></div>
+        <div class="bg-texture" id="bg-texture-a" data-variant="1"></div>
+        <div class="bg-texture is-hidden" id="bg-texture-b" data-variant="2"></div>
+      </div>
+
       <div class="frame" id="frame">
         <!--
           Artboard: 2586×1844. Visible crop: 1920×1080 centered
           (offset left 333, top 382). Elements use artboard coordinates.
         -->
         <div class="artboard" id="artboard">
-          <div class="bg-lettering" aria-hidden="true"></div>
-          <div class="bg-texture" id="bg-texture-a" data-variant="1" aria-hidden="true"></div>
-          <div class="bg-texture is-hidden" id="bg-texture-b" data-variant="2" aria-hidden="true"></div>
-
           <img class="corner corner-tl" src="assets/krog_1.svg" alt="" />
           <img class="corner corner-br" src="assets/krog_2.svg" alt="" />
 
@@ -36,11 +39,17 @@
             aria-label="Prijavi se v monošolo zdaj!"
             tabindex="-1"
           >
+            <img class="prijavi-shadow" src="assets/prijavi_2026_shadow.svg" alt="" />
             <img class="prijavi-banner" src="assets/prijavi_2026.svg" alt="" />
           </a>
 
           <div class="spin-root" id="spin-root">
             <div class="banners" id="banners">
+              <img
+                class="banner-shadow"
+                src="assets/rotating_banners_shadows.svg"
+                alt=""
+              />
               <div class="banner-track banner-track-left" id="banner-track-left">
                 <img class="banner banner-left" id="banner-left" src="assets/banner_left.svg" alt="" />
                 <img

@@ -9,6 +9,8 @@
   const textRight = document.getElementById("text-right");
   const prijaviHit = document.getElementById("prijavi-hit");
   const spinRoot = document.getElementById("spin-root");
+  const bannerShadow = document.querySelector(".banner-shadow");
+  const stage = document.getElementById("stage");
   const bgA = document.getElementById("bg-texture-a");
   const bgB = document.getElementById("bg-texture-b");
 
@@ -16,6 +18,14 @@
   const CROP_H = 1080;
   // Extra clearance so yellow banners stop squeezing the logo.
   const BANNER_GAP_PX = 56;
+  // Portrait hero band: keep logo + both banner labels in view together.
+  const PORTRAIT_HERO_W = 1200;
+  const PORTRAIT_HERO_H = 700;
+  // Native lettering / texture asset sizes (for cover scale).
+  const LETTERING_W = 2757;
+  const LETTERING_H = 1297.57;
+  const TEXTURE_W = 2702;
+  const TEXTURE_H = 1916;
 
   let ready = false;
   let busy = false;
@@ -34,11 +44,35 @@
       anim.oncancel = () => resolve(anim);
     });
 
+  function viewportSize() {
+    const vv = window.visualViewport;
+    return {
+      vw: Math.max(1, vv && vv.width ? vv.width : window.innerWidth),
+      vh: Math.max(1, vv && vv.height ? vv.height : window.innerHeight),
+    };
+  }
+
   function fitFrame() {
-    const sx = window.innerWidth / CROP_W;
-    const sy = window.innerHeight / CROP_H;
-    // Cover the viewport with the 1920×1080 crop.
-    frame.style.setProperty("--frame-scale", String(Math.max(sx, sy)));
+    const { vw, vh } = viewportSize();
+    const viewAspect = vw / vh;
+    const designAspect = CROP_W / CROP_H;
+
+    let scale;
+    if (viewAspect < designAspect) {
+      // Portrait / narrow: fit the logo+banner hero; lettering covers the stage.
+      scale = Math.min(vw / PORTRAIT_HERO_W, vh / PORTRAIT_HERO_H);
+    } else {
+      // Landscape / desktop: cover — no empty bars around the crop.
+      scale = Math.max(vw / CROP_W, vh / CROP_H);
+    }
+
+    frame.style.setProperty("--frame-scale", String(scale));
+
+    // Cover the real viewport with lettering + texture (height especially).
+    const letterCover = Math.max(vw / LETTERING_W, vh / LETTERING_H);
+    const textureCover = Math.max(vw / TEXTURE_W, vh / TEXTURE_H);
+    const bgCover = Math.max(letterCover, textureCover) * 1.02;
+    stage.style.setProperty("--bg-cover-scale", String(bgCover));
   }
 
   function setPrijaviInteractive(on) {
@@ -101,6 +135,15 @@
     );
 
     await Promise.all([leftIn, rightIn, prijaviIn]);
+
+    if (bannerShadow) {
+      animate(
+        bannerShadow,
+        [{ opacity: 0 }, { opacity: 1 }],
+        { duration: 700, easing: "ease-out", fill: "forwards" }
+      );
+    }
+
     await wait(1000);
 
     textLeft.style.transition = "opacity 700ms ease-out";
@@ -261,6 +304,10 @@
 
   logoHit.addEventListener("click", onLogoActivate);
   window.addEventListener("resize", fitFrame);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", fitFrame);
+    window.visualViewport.addEventListener("scroll", fitFrame);
+  }
   fitFrame();
   setPrijaviInteractive(false);
 
@@ -272,6 +319,7 @@
     prijaviHit.style.transform = `translate3d(${BANNER_GAP_PX}px,0,0)`;
     textLeft.style.opacity = "1";
     textRight.style.opacity = "1";
+    if (bannerShadow) bannerShadow.style.opacity = "1";
     ready = true;
     logoHit.disabled = false;
     setPrijaviInteractive(true);

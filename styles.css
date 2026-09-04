@@ -8,6 +8,7 @@
   --crop-x: 333;
   --crop-y: 382;
   --lettering-opacity: 1;
+  --frame-scale: 1;
 }
 
 *,
@@ -29,8 +30,8 @@ body {
 }
 
 body {
-  min-height: 100vh;
-  min-height: 100dvh;
+  position: fixed;
+  inset: 0;
 }
 
 .visually-hidden {
@@ -46,50 +47,34 @@ body {
 }
 
 .stage {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
-  background: var(--bg);
-  display: grid;
-  place-items: center;
-}
-
-/* Fixed design crop; JS sets --frame-scale to cover the viewport. */
-.frame {
-  position: relative;
-  width: calc(var(--crop-w) * 1px);
-  height: calc(var(--crop-h) * 1px);
-  overflow: hidden;
-  background: var(--bg);
-  transform: scale(var(--frame-scale, 1));
-  transform-origin: center center;
-  will-change: transform;
-}
-
-.artboard {
   position: absolute;
-  width: calc(var(--artboard-w) * 1px);
-  height: calc(var(--artboard-h) * 1px);
-  left: calc(var(--crop-x) * -1px);
-  top: calc(var(--crop-y) * -1px);
+  inset: 0;
+  overflow: hidden;
   background: var(--bg);
+}
+
+/* Atmosphere always fills the real viewport (portrait + landscape). */
+.stage-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .bg-lettering {
   position: absolute;
-  /* lettering asset 2757×1297 — center on artboard, native orientation */
   left: 50%;
   top: 50%;
   width: 2757px;
   height: 1297.57px;
-  transform: translate(-50%, -50%);
+  /* Cover viewport while keeping native pattern aspect. */
+  transform: translate(-50%, -50%) scale(var(--bg-cover-scale, 1));
+  transform-origin: center center;
   background-image: url("assets/lettering_pattern.svg");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   opacity: var(--lettering-opacity);
-  pointer-events: none;
+  will-change: transform;
 }
 
 .bg-texture {
@@ -98,7 +83,8 @@ body {
   top: 50%;
   width: 2702px;
   height: 1916px;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(var(--bg-cover-scale, 1));
+  transform-origin: center center;
   background-image: url("assets/background.svg");
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -106,16 +92,46 @@ body {
   opacity: 0.45;
   pointer-events: none;
   transition: opacity 90ms linear;
+  will-change: transform, opacity;
 }
 
 .bg-texture[data-variant="2"] {
   background-image: url("assets/background_2.svg");
-  transform: translate(-50%, -50%) scaleX(-1);
+  transform: translate(-50%, -50%) scaleX(-1) scale(var(--bg-cover-scale, 1));
   opacity: 0.4;
 }
 
 .bg-texture.is-hidden {
   opacity: 0 !important;
+}
+
+/*
+  Hero crop (logo + banners). Margin-centered so scale never pins top-left.
+  Transparent so stage lettering shows through.
+*/
+.frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--crop-w) * 1px);
+  height: calc(var(--crop-h) * 1px);
+  margin-left: calc(var(--crop-w) * -0.5px);
+  margin-top: calc(var(--crop-h) * -0.5px);
+  overflow: hidden;
+  background: transparent;
+  transform: scale(var(--frame-scale));
+  transform-origin: center center;
+  will-change: transform;
+  z-index: 1;
+}
+
+.artboard {
+  position: absolute;
+  width: calc(var(--artboard-w) * 1px);
+  height: calc(var(--artboard-h) * 1px);
+  left: calc(var(--crop-x) * -1px);
+  top: calc(var(--crop-y) * -1px);
+  background: transparent;
 }
 
 .corner {
@@ -128,7 +144,6 @@ body {
   -webkit-user-drag: none;
 }
 
-/* Exact PDF positions on the 2586×1844 artboard */
 .corner-tl {
   left: 549px;
   top: 244px;
@@ -146,7 +161,7 @@ body {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  transform-origin: 1293px 922px; /* artboard center */
+  transform-origin: 1293px 922px;
   will-change: transform;
 }
 
@@ -158,11 +173,26 @@ body {
   height: 418.62px;
 }
 
-/* Tracks carry both the yellow strip and its text so gap/offset stay aligned. */
+.banner-shadow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  opacity: 0;
+  mix-blend-mode: soft-light;
+  transform: translate(1.6%, 3.4%) scale(1.03);
+  z-index: 0;
+}
+
 .banner-track {
   position: absolute;
   inset: 0;
   will-change: transform;
+  z-index: 1;
 }
 
 .banner-track-left {
@@ -190,10 +220,9 @@ body {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  /* Rotation is authored into the SVG assets. */
+  z-index: 2;
 }
 
-/* PDF text boxes on the artboard (local to .banners which starts at y=698.9) */
 .banner-text-left {
   left: 724.5px;
   top: calc(913.7px - 698.9px);
@@ -208,10 +237,6 @@ body {
   height: 105.75px;
 }
 
-/*
-  Dark monošola CTA — artboard place from PDF text baseline mapping.
-  Sits under (z-order) the right yellow banner; shifts with it for gap.
-*/
 .prijavi-hit {
   position: absolute;
   left: 1641.5px;
@@ -240,13 +265,31 @@ body {
   cursor: default;
 }
 
-.prijavi-banner {
-  width: 100%;
-  height: 100%;
+.prijavi-banner,
+.prijavi-shadow {
+  position: absolute;
+  left: 0;
+  top: 0;
   display: block;
   user-select: none;
   -webkit-user-drag: none;
   pointer-events: none;
+}
+
+.prijavi-shadow {
+  /* Asset viewBox is shorter than the full prijavi graphic. */
+  width: 658.97px;
+  height: 121.46px;
+  opacity: 0.95;
+  mix-blend-mode: soft-light;
+  transform: translate(2%, 5%) scale(1.04);
+  z-index: 0;
+}
+
+.prijavi-banner {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .logo-hit {
@@ -297,6 +340,7 @@ body {
   .prijavi-hit,
   .logo,
   .banner-text,
+  .banner-shadow,
   .logo-hit {
     transition: none !important;
   }
