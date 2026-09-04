@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 658.97 172.84">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #242424;
+      }
+
+      .cls-2, .cls-3 {
+        fill: #f89b1c;
+      }
+
+      .cls-3 {
+        font-size: 19.84px;
+        font-family: CreatoDisplay-MediumItalic, Creato Display;
+        font-weight: 500;
+        font-style: italic;
+      }
+
+      .cls-4 {
+        letter-spacing: -0.02em;
+      }
+    </style>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="pprijavi">
+      <g id="PRIJAVA_MONOSOLA" data-name="PRIJAVA MONOSOLA">
+        <g>
+          <polygon class="cls-1" points="648.4 0 0 92.39 18.51 121.46 658.97 30.16 648.4 0"/>
+          <g id="unihive_puscica">
+            <path class="cls-2" d="M402.94,109.37c-23.13-33.61-64-53.7-104.83-49.74,40.52-4.69,83.17,15,104.83,49.74Z"/>
+            <path class="cls-2" d="M413.68,147.93c-14.59-49.27-60.22-83.39-111.93-80.55a112.3,112.3,0,0,0-20.94,3.13l.51-2.5,8.51,8.35c-1.76-1.07-11.34-6.74-13-7.74,58.58-17.88,124.25,18.84,136.84,79.31Z"/>
+            <polygon class="cls-2" points="279.1 65.92 287.77 57.04 281.34 67.66 279.1 65.92 279.1 65.92"/>
+            <circle class="cls-2" cx="414.68" cy="153.82" r="1.67"/>
+            <circle class="cls-2" cx="415.88" cy="163.44" r="1.08"/>
+            <circle class="cls-2" cx="415.91" cy="172.25" r="0.6"/>
+          </g>
+          <text class="cls-3" transform="translate(27.31 109.33) rotate(-8.11)">Prij<tspan class="cls-4" x="28.12" y="0">a</tspan><tspan x="38.36" y="0">vi se v monošolo zdaj!</tspan></text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
