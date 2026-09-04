@@ -15,7 +15,7 @@
   const CROP_W = 1920;
   const CROP_H = 1080;
   // Extra clearance so yellow banners stop squeezing the logo.
-  const BANNER_GAP_PX = 36;
+  const BANNER_GAP_PX = 56;
 
   let ready = false;
   let busy = false;
