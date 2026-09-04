@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 658.97 172.84">
+  <defs>
+    <filter id="soft" x="-14%" y="-50%" width="128%" height="220%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8"/>
+    </filter>
+  </defs>
+  <polygon filter="url(#soft)" fill="#0a0a0a" opacity="0.9"
+    points="648.4 0 0 92.39 18.51 121.46 658.97 30.16 648.4 0"/>
+</svg>
