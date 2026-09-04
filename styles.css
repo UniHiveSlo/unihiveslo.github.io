@@ -7,7 +7,7 @@
   --crop-h: 1080;
   --crop-x: 333;
   --crop-y: 382;
-  --lettering-opacity: 0.3;
+  --lettering-opacity: 1;
 }
 
 *,
@@ -158,6 +158,21 @@ body {
   height: 418.62px;
 }
 
+/* Tracks carry both the yellow strip and its text so gap/offset stay aligned. */
+.banner-track {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.banner-track-left {
+  transform: translate3d(-120%, 0, 0);
+}
+
+.banner-track-right {
+  transform: translate3d(120%, 0, 0);
+}
+
 .banner {
   position: absolute;
   inset: 0;
@@ -166,15 +181,6 @@ body {
   display: block;
   user-select: none;
   -webkit-user-drag: none;
-  will-change: transform;
-}
-
-.banner-left {
-  transform: translate3d(-120%, 0, 0);
-}
-
-.banner-right {
-  transform: translate3d(120%, 0, 0);
 }
 
 .banner-text {
@@ -200,6 +206,47 @@ body {
   top: calc(805.4px - 698.9px);
   width: 355.81px;
   height: 105.75px;
+}
+
+/*
+  Dark monošola CTA — artboard place from PDF text baseline mapping.
+  Sits under (z-order) the right yellow banner; shifts with it for gap.
+*/
+.prijavi-hit {
+  position: absolute;
+  left: 1641.5px;
+  top: 822.4px;
+  width: 658.97px;
+  height: 172.84px;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  z-index: 3;
+  transform: translate3d(125%, 0, 0);
+  opacity: 1;
+  will-change: transform, opacity;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prijavi-hit:focus-visible {
+  outline: 2px solid #f89b1c;
+  outline-offset: 6px;
+}
+
+.prijavi-hit.is-disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+.prijavi-banner {
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 .logo-hit {
@@ -245,8 +292,9 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .banner-left,
-  .banner-right,
+  .banner-track-left,
+  .banner-track-right,
+  .prijavi-hit,
   .logo,
   .banner-text,
   .logo-hit {

@@ -26,22 +26,39 @@
           <img class="corner corner-tl" src="assets/krog_1.svg" alt="" />
           <img class="corner corner-br" src="assets/krog_2.svg" alt="" />
 
+          <!-- CTA sits under the right yellow banner; does not spin. -->
+          <a
+            class="prijavi-hit"
+            id="prijavi-hit"
+            href="https://forms.gle/LrB7eRt9eWpAZofQ8"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Prijavi se v monošolo zdaj!"
+            tabindex="-1"
+          >
+            <img class="prijavi-banner" src="assets/prijavi_2026.svg" alt="" />
+          </a>
+
           <div class="spin-root" id="spin-root">
             <div class="banners" id="banners">
-              <img class="banner banner-left" id="banner-left" src="assets/banner_left.svg" alt="" />
-              <img class="banner banner-right" id="banner-right" src="assets/banner_right.svg" alt="" />
-              <img
-                class="banner-text banner-text-left"
-                id="text-left"
-                src="assets/spletna_stran.svg"
-                alt="spletna stran"
-              />
-              <img
-                class="banner-text banner-text-right"
-                id="text-right"
-                src="assets/prihaja_kmalu.svg"
-                alt="Prihaja kmalu!"
-              />
+              <div class="banner-track banner-track-left" id="banner-track-left">
+                <img class="banner banner-left" id="banner-left" src="assets/banner_left.svg" alt="" />
+                <img
+                  class="banner-text banner-text-left"
+                  id="text-left"
+                  src="assets/spletna_stran.svg"
+                  alt="spletna stran"
+                />
+              </div>
+              <div class="banner-track banner-track-right" id="banner-track-right">
+                <img class="banner banner-right" id="banner-right" src="assets/banner_right.svg" alt="" />
+                <img
+                  class="banner-text banner-text-right"
+                  id="text-right"
+                  src="assets/prihaja_kmalu.svg"
+                  alt="Prihaja kmalu!"
+                />
+              </div>
             </div>
           </div>
 

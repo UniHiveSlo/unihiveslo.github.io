@@ -3,16 +3,19 @@
   const logoHit = document.getElementById("logo-hit");
   const logo = document.getElementById("logo");
   const logoShadow = document.querySelector(".logo-shadow");
-  const bannerLeft = document.getElementById("banner-left");
-  const bannerRight = document.getElementById("banner-right");
+  const trackLeft = document.getElementById("banner-track-left");
+  const trackRight = document.getElementById("banner-track-right");
   const textLeft = document.getElementById("text-left");
   const textRight = document.getElementById("text-right");
+  const prijaviHit = document.getElementById("prijavi-hit");
   const spinRoot = document.getElementById("spin-root");
   const bgA = document.getElementById("bg-texture-a");
   const bgB = document.getElementById("bg-texture-b");
 
   const CROP_W = 1920;
   const CROP_H = 1080;
+  // Extra clearance so yellow banners stop squeezing the logo.
+  const BANNER_GAP_PX = 36;
 
   let ready = false;
   let busy = false;
@@ -38,6 +41,16 @@
     frame.style.setProperty("--frame-scale", String(Math.max(sx, sy)));
   }
 
+  function setPrijaviInteractive(on) {
+    if (on) {
+      prijaviHit.classList.remove("is-disabled");
+      prijaviHit.removeAttribute("tabindex");
+    } else {
+      prijaviHit.classList.add("is-disabled");
+      prijaviHit.setAttribute("tabindex", "-1");
+    }
+  }
+
   async function runIntro() {
     const logoFade = animate(
       logo,
@@ -51,30 +64,43 @@
     );
 
     const bannerEase = "cubic-bezier(0.16, 0.84, 0.28, 1.35)";
+    const gap = BANNER_GAP_PX;
     const leftIn = animate(
-      bannerLeft,
+      trackLeft,
       [
         { transform: "translate3d(-125%, 0, 0)" },
-        { transform: "translate3d(3.2%, 0, 0)", offset: 0.72 },
-        { transform: "translate3d(-1.6%, 0, 0)", offset: 0.86 },
-        { transform: "translate3d(0.7%, 0, 0)", offset: 0.94 },
-        { transform: "translate3d(0, 0, 0)" },
+        { transform: `translate3d(calc(3.2% - ${gap}px), 0, 0)`, offset: 0.72 },
+        { transform: `translate3d(calc(-1.6% - ${gap}px), 0, 0)`, offset: 0.86 },
+        { transform: `translate3d(calc(0.7% - ${gap}px), 0, 0)`, offset: 0.94 },
+        { transform: `translate3d(-${gap}px, 0, 0)` },
       ],
       { duration: 1650, easing: bannerEase, fill: "forwards", delay: 280 }
     );
     const rightIn = animate(
-      bannerRight,
+      trackRight,
       [
         { transform: "translate3d(125%, 0, 0)" },
-        { transform: "translate3d(-3.2%, 0, 0)", offset: 0.72 },
-        { transform: "translate3d(1.6%, 0, 0)", offset: 0.86 },
-        { transform: "translate3d(-0.7%, 0, 0)", offset: 0.94 },
-        { transform: "translate3d(0, 0, 0)" },
+        { transform: `translate3d(calc(-3.2% + ${gap}px), 0, 0)`, offset: 0.72 },
+        { transform: `translate3d(calc(1.6% + ${gap}px), 0, 0)`, offset: 0.86 },
+        { transform: `translate3d(calc(-0.7% + ${gap}px), 0, 0)`, offset: 0.94 },
+        { transform: `translate3d(${gap}px, 0, 0)` },
+      ],
+      { duration: 1650, easing: bannerEase, fill: "forwards", delay: 280 }
+    );
+    // Same slide/bounce as the right yellow banner; stays put during spins.
+    const prijaviIn = animate(
+      prijaviHit,
+      [
+        { transform: "translate3d(125%, 0, 0)" },
+        { transform: `translate3d(calc(-3.2% + ${gap}px), 0, 0)`, offset: 0.72 },
+        { transform: `translate3d(calc(1.6% + ${gap}px), 0, 0)`, offset: 0.86 },
+        { transform: `translate3d(calc(-0.7% + ${gap}px), 0, 0)`, offset: 0.94 },
+        { transform: `translate3d(${gap}px, 0, 0)` },
       ],
       { duration: 1650, easing: bannerEase, fill: "forwards", delay: 280 }
     );
 
-    await Promise.all([leftIn, rightIn]);
+    await Promise.all([leftIn, rightIn, prijaviIn]);
     await wait(1000);
 
     textLeft.style.transition = "opacity 700ms ease-out";
@@ -86,6 +112,7 @@
 
     ready = true;
     logoHit.disabled = false;
+    setPrijaviInteractive(true);
     startBreathing();
     scheduleFlicker();
   }
@@ -196,6 +223,24 @@
     spinRoot.getAnimations().forEach((a) => a.cancel());
   }
 
+  async function fadePrijaviForSpin() {
+    // Fade out for the spinning stretch, then ease back in.
+    await animate(
+      prijaviHit,
+      [
+        { opacity: 1 },
+        { opacity: 0, offset: 0.08 },
+        { opacity: 0, offset: 0.88 },
+        { opacity: 1 },
+      ],
+      {
+        duration: 6800,
+        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+        fill: "forwards",
+      }
+    );
+  }
+
   async function onLogoActivate(event) {
     event.preventDefault();
     if (!ready || busy) return;
@@ -203,28 +248,33 @@
     busy = true;
     stopBreathing();
     logoHit.disabled = true;
+    setPrijaviInteractive(false);
 
-    // Click = button press + banner spin (text rides with banners).
-    await Promise.all([pressLogo(), spinBanners()]);
+    // Click = button press + banner spin; prijavi fades (does not spin).
+    await Promise.all([pressLogo(), spinBanners(), fadePrijaviForSpin()]);
 
     busy = false;
     logoHit.disabled = false;
+    setPrijaviInteractive(true);
     startBreathing();
   }
 
   logoHit.addEventListener("click", onLogoActivate);
   window.addEventListener("resize", fitFrame);
   fitFrame();
+  setPrijaviInteractive(false);
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     logo.style.opacity = "1";
     logoShadow.style.opacity = "0.85";
-    bannerLeft.style.transform = "translate3d(0,0,0)";
-    bannerRight.style.transform = "translate3d(0,0,0)";
+    trackLeft.style.transform = `translate3d(-${BANNER_GAP_PX}px,0,0)`;
+    trackRight.style.transform = `translate3d(${BANNER_GAP_PX}px,0,0)`;
+    prijaviHit.style.transform = `translate3d(${BANNER_GAP_PX}px,0,0)`;
     textLeft.style.opacity = "1";
     textRight.style.opacity = "1";
     ready = true;
     logoHit.disabled = false;
+    setPrijaviInteractive(true);
     scheduleFlicker();
     return;
   }
